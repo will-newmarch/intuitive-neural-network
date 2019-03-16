@@ -1,0 +1,30 @@
+{
+  "name": "intuitive-neural-network",
+  "version": "0.1.0",
+  "description": "An intuitive, object-orientated approach to a Neural Network library.",
+  "main": "src/Network.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/will-newmarch/intuitive-neural-network.git"
+  },
+  "keywords": [
+    "neural",
+    "network",
+    "object",
+    "oriented",
+    "orientated",
+    "intuative"
+  ],
+  "author": "will-newmarch",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/will-newmarch/intuitive-neural-network/issues"
+  },
+  "homepage": "https://github.com/will-newmarch/intuitive-neural-network#readme",
+  "devDependencies": {
+    "jest": "^24.5.0"
+  }
+}
