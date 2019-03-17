@@ -2,16 +2,9 @@ const Network = require('./src/Network.js');
 
 test('library solves XOR problem', () => {
 
-    // Various settings...
-    var learningRate = 0.01;
-    var epochs = 100000;
-    var activation = 'sigmoid';
-
     // Build the network...
     var network = new Network({
         layers: [2,2,1],
-        hiddenActivationType: activation,
-        outputActivationType: 'identity',
         bias: false
     });
 
@@ -22,7 +15,9 @@ test('library solves XOR problem', () => {
         {x: [1,1], y: [0]}
     ];
 
-    // Training...
+    // Training the network...
+    var epochs = 10000;
+    var learningRate = 0.01;
 
     for (var h = 0; h < epochs; h++) {
 
@@ -38,11 +33,9 @@ test('library solves XOR problem', () => {
 
         }
     }
-
     // Done.
 
-    // Testing...
-
+    // Testing the trained network...
     for(var i = 0; i < data.length; i++) {
 
         network.fire(data[i].x);
@@ -54,7 +47,6 @@ test('library solves XOR problem', () => {
         network.reset();
 
     }
-
     // Done.
 
 });
