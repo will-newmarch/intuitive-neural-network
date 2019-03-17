@@ -98,6 +98,7 @@ class Network {
 	/**
 	 * Fire the input layer's Neurons with supplied array of floats
 	 * @param {array} signals 
+	 * @returns Network (for chaining purposes)
 	 */
 	fire(signals) {
 		for (var i = 0; i < this.layers[0].neurons.length; i++) {
@@ -114,6 +115,7 @@ class Network {
 	/**
 	 * Initialise back propagation through network with supplied array of floats
 	 * @param {array} errors 
+	 * @returns Network (for chaining purposes)
 	 */
 	backPropagate(errors) {
 		for (var i = 0; i < errors.length; i++) {
@@ -125,6 +127,7 @@ class Network {
 	/**
 	 * Trigger each synapse to apply its error to its weight
 	 * @param {float} learningRate 
+	 * @returns Network (for chaining purposes)
 	 */
 	applyError(learningRate) {
 		this.layers.map(l => {
@@ -136,6 +139,7 @@ class Network {
 				}
 			});
 		});
+		return this;
 	}
 
 	/**
@@ -153,6 +157,7 @@ class Network {
 
 	/**
 	 * Reset all the Neurons and Synapses back to their initial state
+	 * @returns Network (for chaining purposes)
 	 */
 	reset() {
 		this.layers.map(l => {
@@ -165,6 +170,7 @@ class Network {
 				}
 			});
 		});
+		return this;
 	}
 
 	/**

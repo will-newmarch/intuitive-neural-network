@@ -30,13 +30,11 @@ test('library solves XOR problem', () => {
 
             let index = Math.floor(Math.random() * data.length);
             
-            network.fire(data[index].x);
-
-            network.backPropagate(data[index].y);
-
-            network.applyError(learningRate);
-
-            network.reset();
+            network
+                .fire(data[index].x)
+                .backPropagate(data[index].y)
+                .applyError(learningRate)
+                .reset();
 
         }
     }
