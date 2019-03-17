@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/will-newmarch/intuitive-neural-network.svg?branch=master)](https://travis-ci.org/will-newmarch/intuitive-neural-network)
 # Intuitive Neural Network
 ### When you would like to understand what's going on without the mathematics!
 A JavaScript based, object-orientated approach to a Neural Network library.
