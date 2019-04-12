@@ -9,7 +9,7 @@ class Synapse {
 		this.label = input.label + '--' + output.label; // Human readable label
 		this.input = input; 							// Input Neuron
 		this.output = output; 							// Output Neuron
-		this.weight = (Math.random() * 2) - 1; 			// Initial weight
+		this.weight = Math.random() * 0.4 - 0.2;		// Initial weight
 		this.signal = 0; 								// Input signal
 		this.error = 0; 								// Calculated error
 	}

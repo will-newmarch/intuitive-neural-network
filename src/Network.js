@@ -101,10 +101,10 @@ class Network {
 	 * @returns Network (for chaining purposes)
 	 */
 	fire(signals) {
-		for (var i = 0; i < this.layers[0].neurons.length; i++) {
+		for (var i = 0, len = this.layers[0].neurons.length; i < len; i++) {
 			this.layers[0].neurons[i].fire(signals[i]); // Fire the neurons on the first layer.
 		}
-		for (var i = 0; i < this.layers.length; i++) {
+		for (var i = 0, len = this.layers.length; i < len; i++) {
 			this.layers[i].neurons.map(n => {
 				if(n.constructor.name == 'Bias') n.fire(); // TODO - refactor; we shouldnt need to poke the bias's separately!
 			});
@@ -114,12 +114,12 @@ class Network {
 
 	/**
 	 * Initialise back propagation through network with supplied array of floats
-	 * @param {array} errors 
+	 * @param {array} expected  // TODO
 	 * @returns Network (for chaining purposes)
 	 */
-	backPropagate(errors) {
-		for (var i = 0; i < errors.length; i++) {
-			this.layers[this.layers.length-1].neurons[i].backPropagate(errors[i]);
+	backPropagate(expected) {
+		for (var i = 0, len = expected.length; i < len; i++) {
+			this.layers[this.layers.length-1].neurons[i].backPropagate(expected[i]);
 		}
 		return this;
 	}
@@ -143,16 +143,16 @@ class Network {
 	}
 
 	/**
-	 * Get the total error of the network
+	 * Get the loss of the network
 	 */
-	error() {
-		let totalError = 0;
+	loss() {
+		let loss = 0;
 		for (var i = 1; i < this.layers.length; i++) {
 			for (var j = 0; j < this.layers[i].neurons.length; j++) {
-				totalError += this.layers[i].neurons[j].error;
+				loss += this.layers[i].neurons[j].error;
 			}
 		}
-		return totalError;
+		return loss;
 	}
 
 	/**

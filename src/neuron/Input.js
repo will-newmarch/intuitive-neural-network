@@ -29,8 +29,8 @@ class Input extends Neuron {
 	 * @param {float} signal 
 	 */
 	fire(signal) {
-		this.activation = parseFloat(signal);
-		for (var i = 0; i < this.outputs.length; i++) {
+		this.activation = signal;
+		for (var i = 0, len = this.outputs.length; i < len; i++) {
 			this.outputs[i].fire(this.activation);
 		}
 	}
@@ -41,7 +41,7 @@ class Input extends Neuron {
 	 * @param {float} backSignal 
 	 */
 	backPropagate(backSignal) {
-		this.outputSignals.push(parseFloat(backSignal));
+		this.outputSignals.push(backSignal);
 		if(this.outputSignals.length === this.outputs.length) {
 			const backPropagatedSignal = this.outputSignals.reduce((a,v) => a+v,0);
 			this.error = backPropagatedSignal;

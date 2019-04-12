@@ -2,6 +2,8 @@ const Network = require('./src/Network.js');
 
 test('library solves XOR problem', () => {
 
+    console.time('XOR');
+
     // Build the network...
     var network = new Network({
         layers: [2,2,1],
@@ -48,6 +50,8 @@ test('library solves XOR problem', () => {
 
     }
     // Done.
+
+    console.timeEnd('XOR');
 
 });
 

@@ -3,7 +3,7 @@ class Activation {
         switch(activationType) {
             case 'leakyrelu':
                 if(!derivative)
-                    return function(val) { return val > 0 ? parseFloat(val) : parseFloat(val * 0.01); };
+                    return function(val) { return val > 0 ? val : val * 0.01; };
                 else 
                     return function(val) { return val > 0 ? 1 : 0.01; };
             case 'relu':
@@ -29,9 +29,9 @@ class Activation {
                     return function(val) { return val; };
             case 'heaviside':
                 if(!derivative)
-                    return function(val) { return !!(val > 0) ? 1 : 0; };
+                    return function(val) { return val > 0 ? 1 : 0; };
                 else
-                    return function(val) { return !!(val > 0) ? 1 : 0; };
+                    return function(val) { return val > 0 ? 1 : 0; };
         }
     }
 };

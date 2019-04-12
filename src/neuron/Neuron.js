@@ -10,6 +10,9 @@ class Neuron {
 		this.label 			= label; 	 // Human readable label
 		this.activation 	= 0;     	 // Activation of the neuron
 		this.error 			= 0;     	 // Error to be persisted (not actually used in Input neuron, more kept for interest)
+		this.activationType = 'sigmoid'; // Neuron activation function (defaulting to sigmoid)
+		this._activationFn  = Activation.calculate(this.activationType);
+		this._derivativeFn  = Activation.calculate(this.activationType,true);
 	}
 
 	/**

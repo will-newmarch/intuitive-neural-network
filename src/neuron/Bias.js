@@ -23,7 +23,7 @@ class Bias extends Input {
 	 * Simply fire 1 down every output
 	 */
 	fire() {
-		for (var i = 0; i < this.outputs.length; i++) {
+		for (var i = 0, len = this.outputs.length; i < len; i++) {
 			this.outputs[i].fire(this.activation);
 		}
 	}
