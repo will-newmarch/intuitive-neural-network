@@ -33,8 +33,7 @@ class Output extends Neuron {
 		this.inputSignals.push(signal);
 		if(this.inputSignals.length == this.inputs.length) {
 			const signal = this.inputSignals.reduce((a,s) => a+s,0);
-            const activationFunc = this._activationFn(this.activationType);
-			this.activation = activationFunc(signal);
+			this.activation = this._activationFn(signal);
 		}
     }
     
