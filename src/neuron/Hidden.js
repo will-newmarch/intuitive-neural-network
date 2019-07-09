@@ -33,7 +33,7 @@ class Hidden extends Neuron {
 	 * @param {float} signal 
 	 */
 	fire(signal) {
-		this.inputSignals.push(parseFloat(signal));
+		this.inputSignals.push(signal);
 		if(this.inputSignals.length == this.inputs.length) {
 			const signal = this.inputSignals.reduce((a,s) => a+s,0);
 			this.activation = this.activationFunc(signal);
@@ -48,7 +48,7 @@ class Hidden extends Neuron {
 	 * @param {float} backSignal 
 	 */
 	backPropagate(backSignal) {
-		this.outputSignals.push(parseFloat(backSignal));
+		this.outputSignals.push(backSignal);
 		if(this.outputSignals.length == this.outputs.length) {
 			const signal = this.outputSignals.reduce((a,s) => a+s,0);
 			this.error = signal + this.derivativeFunc(this.activation);

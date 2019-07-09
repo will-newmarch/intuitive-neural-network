@@ -9,7 +9,7 @@ class Activation {
                     return function(val) { return val * (1 - val); };
             case 'leakyrelu':
                 if(!derivative)
-                    return function(val) { return val > 0 ? val : val * 0.01; }; // removed parseFloat here
+                    return function(val) { return val > 0 ? val : val * 0.01; };
                 else 
                     return function(val) { return val > 0 ? 1 : 0.01; };
             case 'relu':
