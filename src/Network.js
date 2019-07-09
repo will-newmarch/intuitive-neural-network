@@ -37,37 +37,37 @@ class Network {
 	 */
 	generate() {
 		// Input layer...
-		var inputLayer = new Layer('input');
+		var inputLayer = new Layer('input',Layer.INPUT);
 		for(var i = 0; i < this.settings.layers[0]; i++) {
 			let neuron = new Input('input-' + i)
 			inputLayer.neurons.push(neuron);
 		}
 		if(this.settings.bias) {
 			let bias = new Bias('input-bias');
-			bias.activationType = this.settings.hiddenActivationType;
+			bias.setActivationType(this.settings.hiddenActivationType);
 			inputLayer.neurons.push(bias);
 		}
 		this.layers.push(inputLayer);
 		// Hidden layers...
 		for (var i = 0; i < this.settings.layers.length - 2; i++) {
-			var hiddenLayer = new Layer('hidden-'+i);
+			var hiddenLayer = new Layer('hidden-'+i,Layer.HIDDEN);
 			for(var j = 0; j < this.settings.layers[i+1]; j++) {
 				let neuron = new Hidden('hidden-'+j);
-				neuron.activationType = this.settings.hiddenActivationType;
+				neuron.setActivationType(this.settings.hiddenActivationType);
 				hiddenLayer.neurons.push(neuron);
 			}
 			if(this.settings.bias) {
 				let bias = new Bias('hidden-bias');
-				bias.activationType = this.settings.hiddenActivationType;
+				bias.setActivationType(this.settings.hiddenActivationType);
 				hiddenLayer.neurons.push(bias);
 			}
 			this.layers.push(hiddenLayer);
 		}
 		// Output layer...
-		var outputLayer = new Layer('output');
+		var outputLayer = new Layer('output',Layer.OUTPUT);
 		for(var i = 0; i < this.settings.layers[this.settings.layers.length-1]; i++) {
 			let neuron = new Output('output-' + i);
-			neuron.activationType = this.settings.outputActivationType;
+			neuron.setActivationType(this.settings.outputActivationType);
 			outputLayer.neurons.push(neuron);
 		}
 		this.layers.push(outputLayer);
@@ -85,7 +85,7 @@ class Network {
 					var currentNeuron = currentLayer.neurons[j];
 					for(var k = 0; k < nextLayer.neurons.length; k++) {
 						var nextNeuron = nextLayer.neurons[k];
-						if(nextNeuron.constructor.name == 'Bias') continue;
+						if(nextNeuron.isBias()) continue;
 						let synapse = new Synapse(currentNeuron,nextNeuron);
 						currentNeuron.outputs.push(synapse);
 						nextNeuron.inputs.push(synapse);
@@ -105,9 +105,9 @@ class Network {
 			this.layers[0].neurons[i].fire(signals[i]); // Fire the neurons on the first layer.
 		}
 		for (var i = 0; i < this.layers.length; i++) {
-			this.layers[i].neurons.map(n => {
-				if(n.constructor.name == 'Bias') n.fire(); // TODO - refactor; we shouldnt need to poke the bias's separately!
-			});
+			for(let n of this.layers[i].neurons) {
+				if(n.isBias()) n.fire(); // TODO - refactor; we shouldnt need to poke the bias's separately!
+			}
 		}
 		return this;
 	}
@@ -130,15 +130,17 @@ class Network {
 	 * @returns Network (for chaining purposes)
 	 */
 	applyError(learningRate) {
-		this.layers.map(l => {
-			l.neurons.map(n => {
-				if(n.outputs) {
-					n.outputs.map(o => {
-						o.applyError(learningRate);
-					});
+		for(let l of this.layers) {
+			if(!l.isOutput()) {
+				for(let n of l.neurons) {
+					if(n.outputs) {
+						for(let o of n.outputs) {
+							o.applyError(learningRate);
+						}
+					}
 				}
-			});
-		});
+			}
+		}
 		return this;
 	}
 
@@ -160,16 +162,16 @@ class Network {
 	 * @returns Network (for chaining purposes)
 	 */
 	reset() {
-		this.layers.map(l => {
-			l.neurons.map(n => {
+		for(let l of this.layers) {
+			for(let n of l.neurons) {
 				n.reset();
 				if(n.outputs) {
-					n.outputs.map(o => {
+					for(let o of n.outputs) {
 						o.reset();
-					});
+					}
 				}
-			});
-		});
+			}
+		}
 		return this;
 	}
 
