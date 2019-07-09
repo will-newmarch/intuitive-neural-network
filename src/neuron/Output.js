@@ -14,7 +14,7 @@ class Output extends Neuron {
 		this.inputSignals 	= [];        // Array to collect signals from inputs (when firing)
 		this.activation 	= 0;         // Activation of the neuron
         this.error 			= 0;         // Error to be persisted and applied by network
-        this.activationType = 'sigmoid'; // Neuron activation function (defaulting to sigmoid)
+		
     }
     
     /**
@@ -31,11 +31,10 @@ class Output extends Neuron {
 	 * @param {float} signal 
 	 */
 	fire(signal) {
-		this.inputSignals.push(parseFloat(signal));
+		this.inputSignals.push(signal);
 		if(this.inputSignals.length == this.inputs.length) {
 			const signal = this.inputSignals.reduce((a,s) => a+s,0);
-            const activationFunc = Activation.calculate(this.activationType);
-			this.activation = activationFunc(signal);
+			this.activation = this.activationFunc(signal);
 		}
     }
     
@@ -45,7 +44,7 @@ class Output extends Neuron {
 	 * @param {float} backSignal 
 	 */
 	backPropagate(backSignal) {
-		this.error = this.activation - parseFloat(backSignal);
+		this.error = this.activation - backSignal;
         for (var i = 0; i < this.inputs.length; i++) {
             this.inputs[i].backPropagate(this.error);
         }

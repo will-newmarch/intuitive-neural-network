@@ -11,6 +11,10 @@ class Bias extends Input {
 		this.activation = 1; // Hard code activation to 1
 	}
 
+	isBias() {
+		return true;
+	}
+
 	/**
 	 * Reset neuron to initial state
 	 */
