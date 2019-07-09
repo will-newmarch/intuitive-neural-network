@@ -18,7 +18,7 @@ test('library solves XOR problem', () => {
     ];
 
     // Training the network...
-    var epochs = 100000;
+    var epochs = 10000;
     var learningRate = 0.01;
 
     for (var h = 0; h < epochs; h++) {
