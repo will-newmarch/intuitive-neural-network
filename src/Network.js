@@ -183,7 +183,7 @@ class Network {
 		});
 	}
 
-	save(filename,callback) {
+	save(filename,callback = () => {}) {
 		const model = this.toJSON();
 		fs.writeFile(filename, model, callback);
 	}
