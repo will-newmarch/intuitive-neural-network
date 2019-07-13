@@ -1,6 +1,10 @@
-const Network = require('./src/Network.js');
+'use strict';
+
+const Network = require('../src/Network.js');
 
 test('library solves XOR problem', () => {
+
+    console.time('XOR');
 
     // Build the network...
     var network = new Network({
@@ -48,6 +52,8 @@ test('library solves XOR problem', () => {
 
     }
     // Done.
+
+    console.timeEnd('XOR');
 
 });
 

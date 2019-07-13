@@ -11,6 +11,10 @@ class Bias extends Input {
 		this.activation = 1; // Hard code activation to 1
 	}
 
+	isBias() {
+		return true;
+	}
+
 	/**
 	 * Reset neuron to initial state
 	 */
@@ -23,7 +27,7 @@ class Bias extends Input {
 	 * Simply fire 1 down every output
 	 */
 	fire() {
-		for (var i = 0; i < this.outputs.length; i++) {
+		for (var i = 0, len = this.outputs.length; i < len; i++) {
 			this.outputs[i].fire(this.activation);
 		}
 	}
