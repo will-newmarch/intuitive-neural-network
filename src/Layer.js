@@ -44,6 +44,12 @@ class Layer {
 		}
 		return totalError;
 	}
+
+	toObject() {
+		return {
+			neurons: this.neurons.map(n => n.toObject())
+		};
+	}
 };
 
 module.exports = Layer;

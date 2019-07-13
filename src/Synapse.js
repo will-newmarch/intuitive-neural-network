@@ -47,6 +47,16 @@ class Synapse {
 	applyError(learningRate) {
 		this.weight -= learningRate * this.error;
 	}
+
+	toObject() {
+		return {
+			type: this.constructor.name,
+			label: this.label,
+			inputLabel: this.input.label,
+			outputLabel: this.output.label,
+			weight: this.weight
+		}
+	}
 };
 
 module.exports = Synapse;
