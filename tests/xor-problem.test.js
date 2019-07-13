@@ -1,4 +1,6 @@
-const Network = require('./src/Network.js');
+'use strict';
+
+const Network = require('../src/Network.js');
 
 test('library solves XOR problem', () => {
 

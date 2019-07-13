@@ -9,11 +9,6 @@ class Output extends Neuron {
 	 */
 	constructor(label) {
 		super(label);
-
-		this.inputs 		= [];        // Reference to the input synapses
-		this.inputSignals 	= [];        // Array to collect signals from inputs (when firing)
-		this.activation 	= 0;         // Activation of the neuron
-        this.error 			= 0;         // Error to be persisted and applied by network
     }
     
     /**
@@ -33,7 +28,7 @@ class Output extends Neuron {
 		this.inputSignals.push(signal);
 		if(this.inputSignals.length == this.inputs.length) {
 			const signal = this.inputSignals.reduce((a,s) => a+s,0);
-			this.activation = this._activationFn(signal);
+			this.activation = this.activationFunc(signal);
 		}
     }
     
@@ -44,7 +39,7 @@ class Output extends Neuron {
 	 */
 	backPropagate(backSignal) {
 		this.error = this.activation - backSignal;
-        for (var i = 0, len = this.inputs.length; i < len; i++) {
+        for (let i = 0, len = this.inputs.length; i < len; i++) {
             this.inputs[i].backPropagate(this.error);
         }
 	}
