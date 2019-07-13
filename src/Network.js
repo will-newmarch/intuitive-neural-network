@@ -1,3 +1,5 @@
+const fs 		= require('fs');
+
 const Layer 	= require('./Layer.js');
 const Input 	= require('./neuron/Input.js');
 const Hidden 	= require('./neuron/Hidden.js');
@@ -175,13 +177,15 @@ class Network {
 		return this;
 	}
 
-	/**
-	 * Log the network in a human readable fashion
-	 */
-	log(synapses = false) { // This could definitely be improved...
-		this.layers.map(l => {
-			l.neurons.map(n => console.log(n.label,n.outputs.map(s => s.weight)));
+	toJSON() {
+		return JSON.stringify({
+			layers: this.layers.map(l => l.toObject())
 		});
+	}
+
+	save(filename,callback) {
+		const model = this.toJSON();
+		fs.writeFile(filename, model, callback);
 	}
 };
 

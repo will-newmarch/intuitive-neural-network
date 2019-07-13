@@ -26,5 +26,8 @@
   "homepage": "https://github.com/will-newmarch/intuitive-neural-network#readme",
   "devDependencies": {
     "jest": "^24.5.0"
+  },
+  "dependencies": {
+    "fs": "0.0.1-security"
   }
 }

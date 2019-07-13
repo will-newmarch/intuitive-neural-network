@@ -9,12 +9,6 @@ class Output extends Neuron {
 	 */
 	constructor(label) {
 		super(label);
-
-		this.inputs 		= [];        // Reference to the input synapses
-		this.inputSignals 	= [];        // Array to collect signals from inputs (when firing)
-		this.activation 	= 0;         // Activation of the neuron
-        this.error 			= 0;         // Error to be persisted and applied by network
-		
     }
     
     /**
