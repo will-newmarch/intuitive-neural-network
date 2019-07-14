@@ -1,4 +1,6 @@
 const fs 		= require('fs');
+const mse 		= require('./utils/mse.js');
+const ervy 		= require('ervy');
 
 const Layer 	= require('./Layer.js');
 const Input 	= require('./neuron/Input.js');
@@ -147,16 +149,43 @@ class Network {
 	}
 
 	/**
-	 * Get the total error of the network
+	 * Train the network
+	 * @param {Object} data { x: [INPUT_DATA], y: [OUTPUT_DATA]}
+	 * @param {Object} params 
 	 */
-	error() {
-		let totalError = 0;
-		for (var i = 1; i < this.layers.length; i++) {
-			for (var j = 0; j < this.layers[i].neurons.length; j++) {
-				totalError += this.layers[i].neurons[j].error;
+	train(data,params = {}) {
+		// Defaults merged with supplied params
+		params = Object.assign(params, {
+			epochs: 1000,
+			learningRate: 0.01
+		});
+		for (var epoch = 0; epoch < params.epochs; epoch++) {
+			for (var index = 0, len = data.length; index < len; index++) {
+				let sample = Math.floor(Math.random() * data.length);
+				this.fire(data[sample].x)
+					.backPropagate(data[sample].y)
+					.applyError(params.learningRate)
+					.reset();
 			}
 		}
-		return totalError;
+	}
+
+	/**
+	 * Test the network
+	 * @param {Object} data { x: [INPUT_DATA], y: [OUTPUT_DATA]}
+	 * @returns MSE
+	 */
+	test(data) {
+		let errorSum = 0;
+		// Testing the trained network...
+		for(var index = 0, len = data.length; index < len; index++) {
+			this.fire(data[index].x);
+			const activation = this.layers[this.layers.length-1].neurons[0].activation;
+			const error = activation - data[index].y;
+			errorSum += mse([error]);
+			this.reset();
+		}
+		return errorSum / data.length;
 	}
 
 	/**
@@ -177,12 +206,32 @@ class Network {
 		return this;
 	}
 
+	/**
+	 * Generate simple chart in terminal
+	 * @param {Array} mses 
+	 */
+	visualiseMSEs(mses) {
+		// Nice little graphic!
+		const chartData = mses.map((m,i) => {
+			return { key: i+1, value: m.toFixed(2), style: ervy.bg('blue') };
+		});
+		console.log(ervy.bar(chartData));
+	}
+
+	/**
+	 * Translate the network into a JSON format
+	 */
 	toJSON() {
 		return JSON.stringify({
 			layers: this.layers.map(l => l.toObject())
 		});
 	}
 
+	/**
+	 * Save the network as JSON to a file
+	 * @param {String} filename 
+	 * @param {Function} callback 
+	 */
 	save(filename,callback = () => {}) {
 		const model = this.toJSON();
 		fs.writeFile(filename, model, callback);
