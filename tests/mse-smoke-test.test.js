@@ -18,16 +18,12 @@ test('mse decreases over time', () => {
         {x: [1,0], y: [1]},
         {x: [1,1], y: [0]}
     ];
-
-    const params = {
-        epochs       : 10000,
-        learningRate : 0.01
-    };
     
-    let MSEs = [];
+    const epochs = 10;
 
-    for(let i = 0; i < 10; i++) {
-        network.train(data,params);
+    let MSEs = [];
+    for(let i = 0; i < epochs; i++) {
+        network.train(data,0.01);
         MSEs.push(network.test(data));
     }
 

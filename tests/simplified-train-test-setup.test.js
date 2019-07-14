@@ -17,12 +17,7 @@ test('simplified usage works correctly', () => {
         {x: [1,1], y: [0]}
     ];
 
-    const params = {
-        epochs       : 10000,
-        learningRate : 0.01
-    };
-    
-    network.train(data,params);
+    network.train(data,0.01);
     const mse = network.test(data);
 
     expect(mse > 0).toBe(true);

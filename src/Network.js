@@ -148,25 +148,26 @@ class Network {
 		return this;
 	}
 
-	/**
-	 * Train the network
-	 * @param {Object} data { x: [INPUT_DATA], y: [OUTPUT_DATA]}
-	 * @param {Object} params 
-	 */
-	train(data,params = {}) {
-		// Defaults merged with supplied params
-		params = Object.assign(params, {
-			epochs: 1000,
-			learningRate: 0.01
-		});
-		for (var epoch = 0; epoch < params.epochs; epoch++) {
-			for (var index = 0, len = data.length; index < len; index++) {
-				let sample = Math.floor(Math.random() * data.length);
-				this.fire(data[sample].x)
-					.backPropagate(data[sample].y)
-					.applyError(params.learningRate)
-					.reset();
-			}
+	// /**
+	//  * Train the network
+	//  * @param {Object} data { x: [INPUT_DATA], y: [OUTPUT_DATA]}
+	//  * @param {Object} options 
+	//  */
+	// train(data,options = {}) {
+	// 	Object.assign(options,{
+	// 		iterations: 5000,
+	// 		learningRate: 0.05
+	// 	});
+	// 	// TODO
+	// }
+
+	train(data,learningRate = 0.01) {
+		for (var index = 0, len = data.length; index < len; index++) {
+			let sample = Math.floor(Math.random() * data.length);
+			this.fire(data[sample].x)
+				.backPropagate(data[sample].y)
+				.applyError(learningRate)
+				.reset();
 		}
 	}
 
@@ -213,9 +214,9 @@ class Network {
 	visualiseMSEs(mses) {
 		// Nice little graphic!
 		const chartData = mses.map((m,i) => {
-			return { key: i+1, value: m.toFixed(2), style: ervy.bg('blue') };
+			return { key: ''+(i+1), value: m.toFixed(2), style: ervy.bg('blue') };
 		});
-		console.log(ervy.bar(chartData));
+		console.log(ervy.bar(chartData,{barWidth: 4}));
 	}
 
 	/**
