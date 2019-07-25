@@ -105,7 +105,7 @@ class Network {
 	 * @returns Network (for chaining purposes)
 	 */
 	fire(signals) {
-		for (var i = 0; i < this.layers[0].neurons.length; i++) {
+		for (var i = 0; i < signals.length; i++) {
 			this.layers[0].neurons[i].fire(signals[i]); // Fire the neurons on the first layer.
 		}
 		for (var i = 0; i < this.layers.length; i++) {
