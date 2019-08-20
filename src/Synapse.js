@@ -48,6 +48,10 @@ class Synapse {
 		this.weight -= learningRate * this.error;
 	}
 
+	mapActivation(signal,count) {
+		this.input.mapActivation(signal * this.weight,count);
+	}
+
 	toObject() {
 		return {
 			type: this.constructor.name,
