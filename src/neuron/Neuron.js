@@ -51,6 +51,36 @@ class Neuron {
 		throw 'backPropagate method must be overidden!';
 	}
 
+	/**
+	 * Uses activation maximisation to discover the path of activation 
+	 * needed to activate this neuron to the supplied signal
+	 * @param {float} signal
+	 * @param {integer} count
+	 */
+	mapActivation(signal,count = null) {
+		if(!this.hasOwnProperty('mappedSignals')) this.mappedSignals = [];
+		this.mappedSignals.push(signal);
+		if(count === null || this.mappedSignals.length === count) {	
+			this.activation = this.mappedSignals.reduce((a,s) => a+s,0);
+			const expectedCount = count === null ? 1 : this.outputs[0].output.inputs.length;
+			for(let input of this.inputs) {
+				input.mapActivation(this.activation,expectedCount);
+			}
+			delete this.mappedSignals;
+		}
+	}
+
+	backPropagate(backSignal) {
+		this.outputSignals.push(backSignal);
+		if(this.outputSignals.length == this.outputs.length) {
+			const signal = this.outputSignals.reduce((a,s) => a+s,0);
+			this.error = signal + this.derivativeFunc(this.activation);
+			for (var i = 0; i < this.inputs.length; i++) {
+				this.inputs[i].backPropagate(this.error);
+			}
+		}
+	}
+
 	toObject() {
 		return {
 			type: this.constructor.name,
