@@ -6,13 +6,14 @@ test('library maps activation', () => {
 
     // Build the network...
     var network = new Network({
-        layers: [2,1],
+        layers: [3,32,3],
         bias: false
     });
 
     var data = [
-        {x: [1,0], y: [1]},
-        {x: [1,1], y: [3]}
+        {x: [0,0,1], y: [1,0,0]},
+        {x: [1,0,0], y: [0,1,0]},
+        {x: [0,1,0], y: [0,0,1]}
     ];
 
     // Training the network...
@@ -36,10 +37,15 @@ test('library maps activation', () => {
     // Done.
 
     // Testing the trained network...
-    network.layers[network.layers.length-1].neurons[0].mapActivation([1]);
+    data[0].y.map((v,i) => {
 
-    expect(Math.round(network.layers[0].neurons[0].activation)).toBe(1);
-    expect(Math.round(network.layers[0].neurons[1].activation)).toBe(2);
+        network.layers[network.layers.length-1].neurons[i].mapActivation(1);
+
+        expect(network.normaliseInputActivation()[0].map(v => Math.round(v))).toEqual(data[i].x);
+    
+        network.reset();
+
+    });
     // Done.
 
 });

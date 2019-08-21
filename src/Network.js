@@ -9,6 +9,8 @@ const Output 	= require('./neuron/Output.js');
 const Bias 		= require('./neuron/Bias.js');
 const Synapse 	= require('./Synapse.js');
 
+const Preprocessor = require('./Preprocessor.js');
+
 class Network {
 
 	/**
@@ -217,6 +219,11 @@ class Network {
 			return { key: ''+(i+1), value: m.toFixed(2), style: ervy.bg('blue') };
 		});
 		console.log(ervy.bar(chartData,{barWidth: 4}));
+	}
+
+	normaliseInputActivation() {
+		const inputActivation = this.layers[0].neurons.map(n => n.activation);
+		return Preprocessor.normalise([inputActivation]);
 	}
 
 	/**

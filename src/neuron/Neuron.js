@@ -64,7 +64,8 @@ class Neuron {
 			this.activation = this.mappedSignals.reduce((a,s) => a+s,0);
 			const expectedCount = count === null ? 1 : this.outputs[0].output.inputs.length;
 			for(let input of this.inputs) {
-				input.mapActivation(this.activation,expectedCount);
+				const activation = this.activationFunc(this.activation);
+				input.mapActivation(activation,expectedCount);
 			}
 			delete this.mappedSignals;
 		}
