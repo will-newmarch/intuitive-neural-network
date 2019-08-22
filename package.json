@@ -1,6 +1,6 @@
 {
   "name": "intuitive-neural-network",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "An intuitive, object-orientated approach to a Neural Network library.",
   "main": "src/Network.js",
   "scripts": {
