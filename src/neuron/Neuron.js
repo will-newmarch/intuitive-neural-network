@@ -62,7 +62,7 @@ class Neuron {
 		this.mappedSignals.push(signal);
 		if(count === null || this.mappedSignals.length === count) {	
 			this.activation = this.mappedSignals.reduce((a,s) => a+s,0);
-			const expectedCount = count === null ? 1 : this.outputs[0].output.inputs.length;
+			const expectedCount = count === null ? 1 : this.outputs[0].output.inputs.filter(i => i.input.constructor.name !== 'Bias').length;
 			for(let input of this.inputs) {
 				const activation = this.activationFunc(this.activation);
 				input.mapActivation(activation,expectedCount);
