@@ -244,6 +244,62 @@ class Network {
 		const model = this.toJSON();
 		fs.writeFile(filename, model, callback);
 	}
+
+	/**
+	 * Save the network as JSON to a file synchronously
+	 * @param {String} filename 
+	 */
+	saveSync(filename) {
+		const model = this.toJSON();
+		fs.writeFileSync(filename, model);
+	}
+
+	/**
+	 * Load a network model from JSON in a file
+	 * @param {String} filename 
+	 */
+	loadSync(filename) {
+		const model = JSON.parse(fs.readFileSync(filename,'utf8'));
+		// Hydrate layers and neurons
+		this.layers = [];
+		for(let layer of model.layers) {
+			const layerType = 
+				this.layers.length < 1 ? 'input'
+				: this.layers.length == model.layers.length - 1 ? 'output'
+				: 'hidden';
+			const newLayer = new Layer(layerType == 'hidden' ? layerType + '-' + this.layers.length : layerType);
+			for(let neuron of layer.neurons) {
+				let newNeuron;
+				switch(neuron.type) {
+				case 'Input':  
+					newNeuron = new Input(neuron.label); break;
+				case 'Hidden': 
+					newNeuron = new Hidden(neuron.label); break;
+				case 'Output': 
+					newNeuron = new Output(neuron.label); break;
+				case 'Bias':   
+					newNeuron = new Bias(neuron.label); break;
+				}
+				newNeuron.label = neuron.label;
+				newNeuron.setActivationType(neuron.activationType);
+				newLayer.neurons.push(newNeuron);
+			}
+			this.layers.push(newLayer);
+		}
+		// Connect neurons with synapses
+		const oldNeurons = model.layers.reduce((a,l) => [].concat(a,l.neurons),[]);
+		const newNeurons = this.layers.reduce((a,l) => [].concat(a,l.neurons),[]);
+		for(let neuron of oldNeurons) {
+			for(let output of neuron.outputs) {
+				const inputNeuron  = newNeurons.find(n => n.label === output.inputLabel);
+				const outputNeuron = newNeurons.find(n => n.label === output.outputLabel);
+				const newSynapse   = new Synapse(inputNeuron,outputNeuron);
+				inputNeuron.outputs.push(newSynapse);
+				outputNeuron.inputs.push(newSynapse);
+				newSynapse.weight = parseFloat(output.weight);
+			}
+		}
+	}
 };
 
 module.exports = Network;
