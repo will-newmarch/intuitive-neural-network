@@ -6,17 +6,8 @@ class Input extends Neuron {
 	 * Constructor for Input Neuron
 	 * @param {string} label 
 	 */
-	constructor(label) {
-		super(label);
-	}
-
-	/**
-	 * Reset neuron to initial state
-	 */
-	reset() {
-		this.outputSignals 	= [];
-		this.activation 	= 0;
-		this.error 			= 0;  
+	constructor(label,layer) {
+		super(label,layer);
 	}
 
 	/**
@@ -24,22 +15,20 @@ class Input extends Neuron {
 	 * @param {float} signal 
 	 */
 	fire(signal) {
-		this.activation = signal;
-		for (var i = 0; i < this.outputs.length; i++) {
-			this.outputs[i].fire(this.activation);
+		this.signal = parseFloat(signal);
+		this.activation = parseFloat(signal);
+		for(let output of this.outputs) {
+			output.fire(parseFloat(this.activation));
 		}
 	}
 
 	/**
 	 * Receive back propagated errors from output synapses and sum for error
 	 * (This is more just for debugging/analysis - the error value is not actually used)
-	 * @param {float} backSignal 
 	 */
-	backPropagate(backSignal) {
-		this.outputSignals.push(backSignal);
-		if(this.outputSignals.length === this.outputs.length) {
-			const backPropagatedSignal = this.outputSignals.reduce((a,v) => a+v,0);
-			this.error = backPropagatedSignal;
+	backPropagate() {
+		for(let output of this.outputs) {
+			this.error += output.activation;
 		}
 	}
 };

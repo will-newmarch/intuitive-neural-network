@@ -21,19 +21,19 @@ test('mse decreases over time', () => {
     
     const epochs = 10;
 
-    let MSEs = [];
+    let errors = [];
     for(let i = 0; i < epochs; i++) {
         network.train(data,0.01);
-        MSEs.push(network.test(data));
+        errors.push(network.test(data));
     }
 
-    const sortedMSEs = MSEs.sort().reverse();
+    const sortedErrors = errors.sort().reverse();
 
-    // MSEs should stay in the same order
-    expect(JSON.stringify(MSEs)).toBe(JSON.stringify(sortedMSEs));
+    // Errors should stay in the same order
+    expect(JSON.stringify(errors)).toBe(JSON.stringify(sortedErrors));
     
     // Nice little graphic!
-    network.visualiseMSEs(MSEs);
+    network.visualiseErrors(errors);
 
 });
 

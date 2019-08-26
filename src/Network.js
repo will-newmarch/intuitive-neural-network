@@ -1,5 +1,4 @@
 const fs 		= require('fs');
-const mse 		= require('./utils/mse.js');
 const ervy 		= require('ervy');
 
 const Layer 	= require('./Layer.js');
@@ -24,7 +23,8 @@ class Network {
 			layers: [10,16,16,1],
 			hiddenActivationType: 'sigmoid',
 			outputActivationType: 'identity',
-			bias: true
+			bias: true,
+			loss: null
 		},settings);
 
 		// Initialise layers array
@@ -45,11 +45,11 @@ class Network {
 		// Input layer...
 		var inputLayer = new Layer('input',Layer.INPUT);
 		for(var i = 0; i < this.settings.layers[0]; i++) {
-			let neuron = new Input('input-' + i)
+			let neuron = new Input('input-' + i,inputLayer)
 			inputLayer.neurons.push(neuron);
 		}
 		if(this.settings.bias) {
-			let bias = new Bias('input-bias');
+			let bias = new Bias('input-bias',inputLayer);
 			bias.setActivationType(this.settings.hiddenActivationType);
 			inputLayer.neurons.push(bias);
 		}
@@ -58,12 +58,12 @@ class Network {
 		for (var i = 0; i < this.settings.layers.length - 2; i++) {
 			var hiddenLayer = new Layer('hidden-'+i,Layer.HIDDEN);
 			for(var j = 0; j < this.settings.layers[i+1]; j++) {
-				let neuron = new Hidden('hidden-'+j);
+				let neuron = new Hidden('hidden-'+j,hiddenLayer);
 				neuron.setActivationType(this.settings.hiddenActivationType);
 				hiddenLayer.neurons.push(neuron);
 			}
 			if(this.settings.bias) {
-				let bias = new Bias('hidden-bias');
+				let bias = new Bias('hidden-bias',hiddenLayer);
 				bias.setActivationType(this.settings.hiddenActivationType);
 				hiddenLayer.neurons.push(bias);
 			}
@@ -72,7 +72,7 @@ class Network {
 		// Output layer...
 		var outputLayer = new Layer('output',Layer.OUTPUT);
 		for(var i = 0; i < this.settings.layers[this.settings.layers.length-1]; i++) {
-			let neuron = new Output('output-' + i);
+			let neuron = new Output('output-' + i,outputLayer);
 			neuron.setActivationType(this.settings.outputActivationType);
 			outputLayer.neurons.push(neuron);
 		}
@@ -108,11 +108,11 @@ class Network {
 	 */
 	fire(signals) {
 		for (var i = 0; i < signals.length; i++) {
-			this.layers[0].neurons[i].fire(signals[i]); // Fire the neurons on the first layer.
+			this.layers[0].neurons[i].fire(signals[i]); // Fire signals to neurons on the first layer.
 		}
-		for (var i = 0; i < this.layers.length; i++) {
-			for(let n of this.layers[i].neurons) {
-				if(n.isBias()) n.fire(); // TODO - refactor; we shouldnt need to poke the bias's separately!
+		for (var i = 1; i < this.layers.length; i++) { // Fire the next neurons in sequence.
+			for(let neuron of this.layers[i].neurons) {
+				neuron.fire();
 			}
 		}
 		return this;
@@ -120,12 +120,19 @@ class Network {
 
 	/**
 	 * Initialise back propagation through network with supplied array of floats
-	 * @param {array} errors 
+	 * @param {array} expected 
 	 * @returns Network (for chaining purposes)
 	 */
-	backPropagate(errors) {
+	backPropagate(expected) {
+		const activations = this.layers[this.layers.length-1].neurons.map(n => n.activation);
+		const errors = this.computeErrors(expected,activations);
 		for (var i = 0; i < errors.length; i++) {
 			this.layers[this.layers.length-1].neurons[i].backPropagate(errors[i]);
+		}
+		for (var i = this.layers.length-2; i >= 0; i--) { // Fire the next neurons in sequence.
+			for(let n of this.layers[i].neurons) {
+				n.backPropagate();
+			}
 		}
 		return this;
 	}
@@ -150,19 +157,11 @@ class Network {
 		return this;
 	}
 
-	// /**
-	//  * Train the network
-	//  * @param {Object} data { x: [INPUT_DATA], y: [OUTPUT_DATA]}
-	//  * @param {Object} options 
-	//  */
-	// train(data,options = {}) {
-	// 	Object.assign(options,{
-	// 		iterations: 5000,
-	// 		learningRate: 0.05
-	// 	});
-	// 	// TODO
-	// }
-
+	/**
+	 * Train the network
+	 * @param {Object} data { x: [INPUT_DATA], y: [OUTPUT_DATA]}
+	 * @param {Number} learningRate 
+	 */
 	train(data,learningRate = 0.01) {
 		for (var index = 0, len = data.length; index < len; index++) {
 			let sample = Math.floor(Math.random() * data.length);
@@ -176,19 +175,33 @@ class Network {
 	/**
 	 * Test the network
 	 * @param {Object} data { x: [INPUT_DATA], y: [OUTPUT_DATA]}
-	 * @returns MSE
+	 * @returns error
 	 */
 	test(data) {
 		let errorSum = 0;
 		// Testing the trained network...
 		for(var index = 0, len = data.length; index < len; index++) {
 			this.fire(data[index].x);
-			const activation = this.layers[this.layers.length-1].neurons[0].activation;
-			const error = activation - data[index].y;
-			errorSum += mse([error]);
+			const activations = this.layers[this.layers.length-1].neurons.map(n => n.activation);
+			errorSum += this.computeErrors(data[index].y,activations);
 			this.reset();
 		}
 		return errorSum / data.length;
+	}
+
+	computeErrors(expected,predicted) {
+		const errors = [];
+		for (let i = 0; i < expected.length; i++) {
+			if(this.settings.loss == 'mse') {
+				errors.push(Math.pow((predicted[i] - expected[i]), 2));
+			} else if(this.settings.loss == 'cee') {
+				errors.push(-predicted[i] * Math.log(expected[i]));
+			} else {
+				errors.push(predicted - expected);
+			}
+		}
+		console.log('computeErrors',expected,predicted,errors);
+		return errors;
 	}
 
 	/**
@@ -211,11 +224,11 @@ class Network {
 
 	/**
 	 * Generate simple chart in terminal
-	 * @param {Array} mses 
+	 * @param {Array} errors 
 	 */
-	visualiseMSEs(mses) {
+	visualiseErrors(errors) {
 		// Nice little graphic!
-		const chartData = mses.map((m,i) => {
+		const chartData = errors.map((m,i) => {
 			return { key: ''+(i+1), value: m.toFixed(2), style: ervy.bg('blue') };
 		});
 		console.log(ervy.bar(chartData,{barWidth: 4}));
@@ -272,13 +285,13 @@ class Network {
 				let newNeuron;
 				switch(neuron.type) {
 				case 'Input':  
-					newNeuron = new Input(neuron.label); break;
+					newNeuron = new Input(neuron.label,newLayer); break;
 				case 'Hidden': 
-					newNeuron = new Hidden(neuron.label); break;
+					newNeuron = new Hidden(neuron.label,newLayer); break;
 				case 'Output': 
-					newNeuron = new Output(neuron.label); break;
+					newNeuron = new Output(neuron.label,newLayer); break;
 				case 'Bias':   
-					newNeuron = new Bias(neuron.label); break;
+					newNeuron = new Bias(neuron.label,newLayer); break;
 				}
 				newNeuron.label = neuron.label;
 				newNeuron.setActivationType(neuron.activationType);

@@ -6,12 +6,12 @@ class Neuron {
 	 * Constructor for Hidden Neuron
 	 * @param {string} label 
 	 */
-	constructor(label) {
+	constructor(label,layer) {
 		this.label 			= label; 	 // Human readable label
+		this.layer			= layer;	 // Layer that contains the neuron
 		this.inputs 		= [];        // Reference to the input synapses
-		this.inputSignals 	= [];        // Array to collect signals from inputs (when firing)
 		this.outputs 		= [];    	 // Reference to the output synapses
-		this.outputSignals 	= [];    	 // Array to collect signals FROM outputs (when backpropagating)
+		this.signal 		= 0;		 // Received signal
 		this.activation 	= 0;     	 // Activation of the neuron
 		this.error 			= 0;     	 // Error to be persisted (not actually used in Input neuron, more kept for interest)
 		this.setActivationType('sigmoid'); // Neuron activation function (defaulting to sigmoid)
@@ -31,24 +31,39 @@ class Neuron {
 	 * Reset neuron to initial state
 	 */
 	reset() {
+		this.signal 		= 0;
 		this.activation 	= 0;
 		this.error 			= 0;  
 	}
 	
 	/**
 	 * Receive input signal and propagate activation to output synapses
-	 * @param {float} signal 
 	 */
-	fire(signal) {
-		throw 'fire method must be overidden!';
+	fire() {
+		this.signal = 0;
+		for(let input of this.inputs) {
+			//console.log('input.activation',input.label,input.activation)
+			this.signal += input.activation;
+		}
+		this.activation = this.activationFunc(this);
+		//console.log(this.label,'this.activation',this.activation,this.activationType);
+		for(let output of this.outputs) {
+			output.fire(this.activation);
+		}
 	}
 
 	/**
-	 * Receive back propagated errors from output synapses and sum for error
-	 * @param {float} backSignal 
+	 * Receive back propagated errors from output synapses and sum for error 
 	 */
-	backPropagate(backSignal) {
-		throw 'backPropagate method must be overidden!';
+	backPropagate() {
+		this.signal = 0;
+		for(let output of this.outputs) {
+			this.signal += output.activation;
+		}
+		this.error = this.signal + this.derivativeFunc(this.activation);
+		for(let input of this.inputs) {
+			input.backPropagate(this.error);
+		}
 	}
 
 	/**
@@ -62,23 +77,12 @@ class Neuron {
 		this.mappedSignals.push(signal);
 		if(count === null || this.mappedSignals.length === count) {	
 			this.activation = this.mappedSignals.reduce((a,s) => a+s,0);
-			const expectedCount = count === null ? 1 : this.outputs[0].output.inputs.filter(i => i.input.constructor.name !== 'Bias').length;
+			const expectedCount = count === null ? 1 : this.layer.neurons.filter(i => i.input.constructor.name !== 'Bias').length;
 			for(let input of this.inputs) {
 				const activation = this.activationFunc(this.activation);
 				input.mapActivation(activation,expectedCount);
 			}
 			delete this.mappedSignals;
-		}
-	}
-
-	backPropagate(backSignal) {
-		this.outputSignals.push(backSignal);
-		if(this.outputSignals.length == this.outputs.length) {
-			const signal = this.outputSignals.reduce((a,s) => a+s,0);
-			this.error = signal + this.derivativeFunc(this.activation);
-			for (var i = 0; i < this.inputs.length; i++) {
-				this.inputs[i].backPropagate(this.error);
-			}
 		}
 	}
 

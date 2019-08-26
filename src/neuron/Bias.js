@@ -6,21 +6,13 @@ class Bias extends Input {
 	 * Constructor for Bias Neuron
 	 * @param {string} label 
 	 */
-	constructor(label) {
-		super(label)
+	constructor(label,layer) {
+		super(label,layer)
 		this.activation = 1; // Hard code activation to 1
 	}
 
 	isBias() {
 		return true;
-	}
-
-	/**
-	 * Reset neuron to initial state
-	 */
-	reset() {
-		this.outputSignals 	= [];
-		this.error 			= 0;  
 	}
 
 	/**
