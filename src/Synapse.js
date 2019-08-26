@@ -11,6 +11,7 @@ class Synapse {
 		this.output = output; 							// Output Neuron
 		this.weight = (Math.random() * 2) - 1; 			// Initial weight
 		this.signal = 0; 								// Input signal
+		this.activation = 0;
 		this.error = 0; 								// Calculated error
 	}
 
@@ -18,8 +19,9 @@ class Synapse {
 	 * Reset synapse to initial state
 	 */
 	reset() {
-		this.signal = 0;
 		this.error = 0;
+		this.signal = 0;
+		this.activation = 0;
 	}
 
 	/**
@@ -28,7 +30,7 @@ class Synapse {
 	 */
 	fire(signal) {
 		this.signal = signal;
-		this.output.fire(signal * this.weight);
+		this.activation = signal * this.weight;
 	}
 
 	/**
@@ -37,7 +39,7 @@ class Synapse {
 	 */
 	backPropagate(error) {
 		this.error = error * this.signal;
-		this.input.backPropagate(error * this.weight);
+		this.activation = error * this.weight;
 	}
 
 	/**
@@ -48,8 +50,8 @@ class Synapse {
 		this.weight -= learningRate * this.error;
 	}
 
-	mapActivation(signal,count) {
-		this.input.mapActivation(signal * this.weight,count);
+	mapActivation(signal) {		
+		this.activation = signal * this.weight;
 	}
 
 	toObject() {
