@@ -29,7 +29,7 @@ class Synapse {
 	 * @param {float} signal 
 	 */
 	fire(signal) {
-		this.signal = parseFloat(signal);
+		this.signal = signal;
 		this.activation = signal * this.weight;
 	}
 
@@ -50,8 +50,8 @@ class Synapse {
 		this.weight -= learningRate * this.error;
 	}
 
-	mapActivation(signal,count) {
-		this.input.mapActivation(signal * this.weight,count);
+	mapActivation(signal) {		
+		this.activation = signal * this.weight;
 	}
 
 	toObject() {

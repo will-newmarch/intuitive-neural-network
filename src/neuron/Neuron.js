@@ -42,11 +42,9 @@ class Neuron {
 	fire() {
 		this.signal = 0;
 		for(let input of this.inputs) {
-			//console.log('input.activation',input.label,input.activation)
 			this.signal += input.activation;
 		}
 		this.activation = this.activationFunc(this);
-		//console.log(this.label,'this.activation',this.activation,this.activationType);
 		for(let output of this.outputs) {
 			output.fire(this.activation);
 		}
@@ -69,20 +67,14 @@ class Neuron {
 	/**
 	 * Uses activation maximisation to discover the path of activation 
 	 * needed to activate this neuron to the supplied signal
-	 * @param {float} signal
-	 * @param {integer} count
 	 */
-	mapActivation(signal,count = null) {
-		if(!this.hasOwnProperty('mappedSignals')) this.mappedSignals = [];
-		this.mappedSignals.push(signal);
-		if(count === null || this.mappedSignals.length === count) {	
-			this.activation = this.mappedSignals.reduce((a,s) => a+s,0);
-			const expectedCount = count === null ? 1 : this.layer.neurons.filter(i => i.input.constructor.name !== 'Bias').length;
-			for(let input of this.inputs) {
-				const activation = this.activationFunc(this.activation);
-				input.mapActivation(activation,expectedCount);
-			}
-			delete this.mappedSignals;
+	mapActivation() {
+		let signal = 0;
+		for(let output of this.outputs) {
+			signal += output.activation;
+		}
+		for(let input of this.inputs) {
+			input.mapActivation(signal);
 		}
 	}
 

@@ -31,6 +31,14 @@ class Input extends Neuron {
 			this.error += output.activation;
 		}
 	}
+
+	mapActivation() {
+		let signal = 0;
+		for(let output of this.outputs) {
+			signal += output.activation;
+		}
+		this.activation = signal;
+	}
 };
 
 module.exports = Input;

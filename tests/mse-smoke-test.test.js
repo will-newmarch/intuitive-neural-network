@@ -9,7 +9,8 @@ test('mse decreases over time', () => {
     // Build the network...
     var network = new Network({
         layers: [2,2,1],
-        bias: false
+        bias: false,
+        loss: 'mse'
     });
 
     var data = [

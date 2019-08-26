@@ -137,6 +137,18 @@ class Network {
 		return this;
 	}
 
+	mapActivation(activation) {
+		for (var i = 0; i < activation.length; i++) {
+			this.layers[this.layers.length-1].neurons[i].mapActivation(activation[i]);
+		}
+		for (var i = this.layers.length-2; i >= 0; i--) { // Fire the next neurons in sequence.
+			for(let n of this.layers[i].neurons) {
+				n.mapActivation();
+			}
+		}
+		return this.normaliseInputActivation();
+	}
+
 	/**
 	 * Trigger each synapse to apply its error to its weight
 	 * @param {float} learningRate 
@@ -183,7 +195,7 @@ class Network {
 		for(var index = 0, len = data.length; index < len; index++) {
 			this.fire(data[index].x);
 			const activations = this.layers[this.layers.length-1].neurons.map(n => n.activation);
-			errorSum += this.computeErrors(data[index].y,activations);
+			errorSum += this.computeErrors(data[index].y,activations).reduce((a,v) => a+v,0);
 			this.reset();
 		}
 		return errorSum / data.length;
@@ -195,12 +207,15 @@ class Network {
 			if(this.settings.loss == 'mse') {
 				errors.push(Math.pow((predicted[i] - expected[i]), 2));
 			} else if(this.settings.loss == 'cee') {
-				errors.push(-predicted[i] * Math.log(expected[i]));
+				if(expected[i] == 1) {
+					errors.push(-Math.log(expected[i] - predicted[i]));
+				} else {
+					errors.push(-Math.log(1 - (expected[i] - predicted[i])));
+				}
 			} else {
-				errors.push(predicted - expected);
+				errors.push(predicted[i] - expected[i]);
 			}
 		}
-		console.log('computeErrors',expected,predicted,errors);
 		return errors;
 	}
 
@@ -236,7 +251,7 @@ class Network {
 
 	normaliseInputActivation() {
 		const inputActivation = this.layers[0].neurons.map(n => n.activation);
-		return Preprocessor.normalise([inputActivation]);
+		return Preprocessor.normalise([inputActivation])[0];
 	}
 
 	/**

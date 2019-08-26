@@ -6,22 +6,22 @@ test('cee loss function works correctly', () => {
 
     // Build the network...
     var network = new Network({
-        layers: [2,2,2],
-        hiddenActivationType: 'sigmoid',
+        layers: [3,2,2],
+        hiddenActivationType: 'identity',
         outputActivationType: 'softmax',
         bias: true,
         loss: 'cee'
     });
 
     var data = [
-        {x: [0,0], y: [0,0]},
-        {x: [0,1], y: [1,1]},
-        {x: [1,0], y: [1,1]},
-        {x: [1,1], y: [0,0]}
+        {x: [0,0,1], y: [0,1]},
+        {x: [0,1,1], y: [1,0]},
+        {x: [1,0,1], y: [1,0]},
+        {x: [1,1,1], y: [0,1]}
     ];
 
     // Training the network...
-    var epochs = 1;
+    var epochs = 1000;
     var learningRate = 0.01;
     var errors = [];
 
@@ -33,10 +33,6 @@ test('cee loss function works correctly', () => {
             
             network
                 .fire(data[index].x)
-
-            console.log('activation',network.layers[2].neurons[0].activation);
-
-                network
                 .backPropagate(data[index].y)
                 .applyError(learningRate)
                 .reset();
@@ -56,8 +52,9 @@ test('cee loss function works correctly', () => {
 
         network.fire(data[i].x);
 
-        var activation = network.layers[network.layers.length-1].neurons[0].activation;
-console.log(activation,data[i].y[0]);
+        var activation = network.layers[network.layers.length-1].neurons.map(n => n.activation);
+
+        // TODO
         //expect(Math.round(activation)).toBe(data[i].y[0]);
 
         network.reset();

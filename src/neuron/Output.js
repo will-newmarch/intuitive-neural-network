@@ -21,6 +21,17 @@ class Output extends Neuron {
             input.backPropagate(this.error);
         }
 	}
+
+	/**
+	 * Uses activation maximisation to discover the path of activation 
+	 * needed to activate this neuron to the supplied signal
+	 * @param {float} signal
+	 */
+	mapActivation(signal) {
+		for(let input of this.inputs) {
+			input.mapActivation(signal);
+		}
+	}
 };
 
 module.exports = Output;
